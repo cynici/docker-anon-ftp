@@ -1,0 +1,39 @@
+listen=YES
+anonymous_enable=NO
+dirmessage_enable=YES
+use_localtime=YES
+connect_from_port_20=YES
+secure_chroot_dir=/var/run/vsftpd/empty
+write_enable=YES
+seccomp_sandbox=NO
+xferlog_std_format=NO
+log_ftp_protocol=YES
+syslog_enable=YES
+hide_ids=YES
+seccomp_sandbox=NO
+pasv_enable=YES
+port_enable=YES
+anon_root={{ .Env.ANON_ROOT }}
+pasv_max_port={{ default .Env.PASV_MAX_PORT "65515" }}
+pasv_min_port={{ default .Env.PASV_MIN_PORT "65500" }}
+max_per_ip={{default .Env.MAX_PER_IP "5"}}
+max_login_fails={{ default .Env.PASV_MAX_PORT "2" }}
+max_clients={{ default .Env.MAX_CLIENTS "50" }}
+anon_max_rate={{ default .Env.ANON_MAX_RATE "6250000" }}
+ftpd_banner={{ .Env.FTPD_BANNER }}
+banner_file={{ default .Env.BANNER_FILE "/dev/null" }}
+pasv_address={{ .Env.PASV_ADDRESS }}
+
+#virtual user conf stuff
+local_enable=YES
+pam_service_name=vsftpd
+virtual_use_local_privs=YES
+guest_enable=YES
+guest_username=ftp
+user_sub_token=$USER
+local_root=/ftpuploads/$USER
+hide_ids=YES
+file_open_mode=0666
+# Without this, vsftpd v3+: refusing to run with writable root inside chroot
+# https://www.benscobie.com/fixing-500-oops-vsftpd-refusing-to-run-with-writable-root-inside-chroot/
+allow_writeable_chroot=YES
