@@ -1,9 +1,15 @@
 ftpd:
     build: .
+    env_file: ./.env
     ports:
-        - "20-21:20-21"
-        - "65500-65515:65500-65515"
+        - "146.64.28.21:20-21:20-21"
+        - "146.64.28.21:${PASV_MIN_PORT}-${PASV_MAX_PORT}:${PASV_MIN_PORT}-${PASV_MAX_PORT}"
     volumes:
-        - "/tmp:/var/ftp:ro"
-    environment:
-        - FTPD_BANNER=Anonymous FTP server
+        - /tmp:/var/ftp:ro
+        - ./vsftpd.conf.tmpl:/vsftpd.conf.tmpl
+        # These must be mounted read-write
+        - /home/marvin/halo/etc/vsftpd/passwd:/etc/vsftpd/passwd
+        - /home/marvin/halo/home/afisuser/dockvols/afisfeeder/ftpuploads:/ftpuploads
+    entrypoint: ["/docker-entrypoint.sh"]
+    command: ["/sbin/my_init"]
+    restart: on-failure:3
